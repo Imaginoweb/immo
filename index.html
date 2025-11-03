@@ -291,7 +291,7 @@
     const dropdown = document.getElementById("searchDropdown");
     const historyEl = document.getElementById("history");
 
-    // === CHARGEMENT CONTACTS (page vierge : pas d'auto-sélection) ===
+    // === CHARGEMENT CONTACTS (page vierge) ===
     async function loadContacts() {
       try {
         const res = await fetch(API_BASE_URL + "?limit=1000", { headers: { "X-API-KEY": API_KEY } });
@@ -346,6 +346,61 @@
     function contactKey(c){ return c.email || (c.id || c.CLIENT_ID) || ((c.firstName||"")+":"+(c.lastName||"")); }
     function getStore(type){ try { return JSON.parse(localStorage.getItem(type) || "{}"); } catch { return {}; } }
     function setStore(type, obj){ localStorage.setItem(type, JSON.stringify(obj)); }
+
+    // --- FAUX HISTORIQUE EN DUR (seed démo) ---
+    function seedDemoHistory(contact){
+      const isMichel = (contact.firstName||"").toLowerCase()==="michel" && (contact.lastName||"").toLowerCase().includes("martin");
+      const key = contactKey(contact);
+      const oppsStore = getStore("pichet_opps");
+      const notesStore = getStore("pichet_notes");
+
+      // On ne “seed” qu’une fois (si aucun historique existant)
+      const hasAnything = (oppsStore[key] && oppsStore[key].length) || (notesStore[key] && notesStore[key].length);
+      if (!isMichel || hasAnything) return;
+
+      oppsStore[key] = [
+        {
+          title: "Visite T3 — Résidence Emergence (Bordeaux)",
+          status: "En cours",
+          budget: "320000",
+          due: "2025-11-15",
+          notes: "Intérêt pour un étage élevé, balcon. Parking indispensable.",
+          date: "2025-10-20T10:15:00Z"
+        },
+        {
+          title: "Achat T2 — L’Île en Seine (L’Île-Saint-Denis)",
+          status: "Ouverte",
+          budget: "260000",
+          due: "2025-12-05",
+          notes: "Souhaite un PTZ si éligible. Proche transports.",
+          date: "2025-10-28T16:40:00Z"
+        }
+      ];
+
+      notesStore[key] = [
+        {
+          title: "Appel de qualification",
+          type: "Appel",
+          body: "Profil primo-accédant. Recherche 2 à 3 pièces, neuf, extérieur si possible.",
+          date: "2025-10-18T09:30:00Z"
+        },
+        {
+          title: "Email d’envoi de brochure",
+          type: "Email",
+          body: "Brochures ‘Emergence’ et ‘Villa Rodin’ envoyées + grille de prix.",
+          date: "2025-10-21T14:05:00Z"
+        },
+        {
+          title: "Relance visite témoin",
+          type: "Visite",
+          body: "Proposition de créneau samedi 11h ou lundi 18h.",
+          date: "2025-10-29T11:20:00Z"
+        }
+      ];
+
+      setStore("pichet_opps", oppsStore);
+      setStore("pichet_notes", notesStore);
+    }
 
     function renderHistory() {
       historyEl.innerHTML = "";
@@ -437,7 +492,6 @@
       const wrap = document.getElementById("programsGrid");
       wrap.innerHTML = "";
 
-      // Filtrage doux selon la ville d'intérêt (si renseignée dans le contact)
       const interest = (forContact?.Ville_d_interets || forContact?.villesInterets || "").toString().toLowerCase();
       let data = PROGRAMS.slice();
       if (interest) {
@@ -506,6 +560,10 @@
       const initials = (c.firstName ? c.firstName[0] : "") + (c.lastName ? c.lastName[0] : "");
       document.getElementById("avatarInitials").textContent = initials ? initials.toUpperCase() : "CL";
 
+      // Seed démo si Michel Martin et aucun historique
+      seedDemoHistory(c);
+
+      // Consentements
       const optinsEl = document.getElementById("optins");
       optinsEl.innerHTML = "";
       const optins = [
