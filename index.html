@@ -58,7 +58,6 @@
     .info-row { display:flex; flex-direction:column; gap:0.1rem; }
     .label { font-size:0.65rem; color:#94a3b8; text-transform:uppercase; }
     .value { font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:.5rem; }
-    .thumb { width:90px; height:64px; object-fit:cover; border-radius:0.6rem; border:1px solid var(--border); background:#fafafa; }
 
     .agent-card { background:rgba(0,60,113,0.04); border-radius:1rem; padding:0.6rem 0.7rem 0.7rem; }
     .optin-list { display:flex; gap:0.5rem; flex-wrap:wrap; }
@@ -292,24 +291,6 @@
     const dropdown = document.getElementById("searchDropdown");
     const historyEl = document.getElementById("history");
 
-    // --- Icônes inline ---
-    function iconEmail(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v12H4z" stroke="#003c71" stroke-width="1.7"/><path d="M4 7l8 6 8-6" stroke="#003c71" stroke-width="1.7"/></svg>'}
-    function iconPhone(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.58 2.64a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.44-1.14a2 2 0 0 1 2.11-.45c.86.26 1.74.46 2.64.58A2 2 0 0 1 22 16.92z" stroke="#003c71" stroke-width="1.7"/></svg>'}
-    function iconSMS(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H8l-5 5V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#003c71" stroke-width="1.7"/></svg>'}
-    function iconWhats(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 11.5A8.5 8.5 0 1 1 6.6 19.9L3 21l1.1-3.6A8.5 8.5 0 0 1 20 11.5z" stroke="#003c71" stroke-width="1.7"/></svg>'}
-    function iconVisit(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l7 7-7 7-7-7 7-7z" stroke="#003c71" stroke-width="1.7"/><path d="M12 22v-6" stroke="#003c71" stroke-width="1.7"/></svg>'}
-    function iconBuilding(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#003c71" stroke-width="1.7"/><path d="M8 7h2M8 11h2M8 15h2M14 7h2M14 11h2M14 15h2" stroke="#003c71" stroke-width="1.7"/></svg>'}
-
-    function canalIcon(val){
-      const v = (val||"").toString().toLowerCase();
-      if (v.includes("mail")) return iconEmail();
-      if (v.includes("télé") || v.includes("telephone") || v.includes("phone")) return iconPhone();
-      if (v.includes("sms")) return iconSMS();
-      if (v.includes("whats")) return iconWhats();
-      if (v.includes("visite") || v.includes("rdv") || v.includes("agence")) return iconVisit();
-      return iconEmail();
-    }
-
     // === CHARGEMENT CONTACTS (page vierge : pas d'auto-sélection) ===
     async function loadContacts() {
       try {
@@ -396,7 +377,7 @@
       document.getElementById("btnPlanifier").disabled = !enabled;
     }
 
-    // === PROGRAMMES (extraits de la page Pichet fournie) ===
+    // === PROGRAMMES (exemples) ===
     const PROGRAMS = [
       {
         name: "L'Île en Seine - Les Riots et La Ria",
@@ -456,7 +437,7 @@
       const wrap = document.getElementById("programsGrid");
       wrap.innerHTML = "";
 
-      // Optionnel : filtrer par ville d'intérêt si présente dans le contact
+      // Filtrage doux selon la ville d'intérêt (si renseignée dans le contact)
       const interest = (forContact?.Ville_d_interets || forContact?.villesInterets || "").toString().toLowerCase();
       let data = PROGRAMS.slice();
       if (interest) {
@@ -509,27 +490,11 @@
       document.getElementById("clientEmail").textContent = c.email || "—";
       document.getElementById("clientTel").textContent = c.telephone || "—";
 
-      const canal = c.Canal_prefere || c.canalPrefere || c.canal_prefere || "";
-      document.getElementById("canalPref").textContent = canal || "—";
-      document.getElementById("canalPrefIcon").innerHTML = canalIcon(canal);
-
       const addrParts = [c.addressLine, c.zipCode, c.city, c.country].filter(Boolean);
       document.getElementById("clientAddress").textContent = addrParts.join(", ") || "—";
 
       document.getElementById("projetActuel").textContent = c.Projet_actuel || c.projetActuel || "—";
       document.getElementById("villesInterets").textContent = c.Ville_d_interets || c.villesInterets || "—";
-
-      // Dernier achat : image si disponible
-      const img = c.Dernier_achat_image || c.Photo_bien || c.photoBien;
-      const lastTxt = c.Dernier_achat || c.dernierAchat || "";
-      const imgEl = document.getElementById("dernierAchatImg");
-      const txtEl = document.getElementById("dernierAchat");
-      if (img && typeof img === "string" && (img.startsWith("http://") || img.startsWith("https://"))) {
-        imgEl.src = img; imgEl.style.display = "inline-block"; txtEl.textContent = lastTxt || "";
-      } else {
-        imgEl.style.display = "inline-block"; imgEl.src = "data:image/svg+xml;utf8," + encodeURIComponent(iconBuilding());
-        txtEl.textContent = lastTxt || "—";
-      }
 
       document.getElementById("nomAgent").textContent = c.Nom_Agent || c.nomAgent || "—";
       document.getElementById("telAgent").textContent = c.Tel_agent ? "📞 " + c.Tel_agent : (c.telAgent ? "📞 " + c.telAgent : "—");
