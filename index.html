@@ -2,231 +2,100 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Clienteling</title>
+  <title>Clienteling PICHET</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --bg: #f3f4f6;
       --card: #ffffff;
-      --primary: #003c71; /* bleu un peu corpo */
-      --primary-soft: rgba(0,60,113,0.12);
+      --primary: #003c71;
       --text: #0f172a;
       --muted: #6b7280;
       --radius: 1.25rem;
+      --border: rgba(15,23,42,0.06);
     }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+    body { margin:0; font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text);}
     header {
-      background: #fff;
-      border-bottom: 1px solid rgba(15,23,42,0.05);
-      padding: 1rem 1.5rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 30;
+      background:#fff; border-bottom:1px solid rgba(15,23,42,0.05);
+      padding:0.75rem 1.5rem; display:flex; gap:1.25rem; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:30;
     }
-    .app-title {
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-    .search-wrapper {
-      position: relative;
-      max-width: 420px;
-      width: 100%;
-    }
+    .logo-wrap { display:flex; align-items:center; gap:.75rem; }
+    .logo-wrap img { height:42px; display:block; }
+    .app-title { font-weight:600; font-size:.78rem; color:#6b7280; }
+    .search-wrapper { position:relative; max-width:420px; width:100%; }
     .search-input {
-      width: 100%;
-      padding: 0.65rem 0.75rem 0.65rem 2.4rem;
-      border: 1px solid rgba(15,23,42,0.08);
-      border-radius: 9999px;
-      background: #fff;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border 0.15s ease;
+      width:100%; padding:0.65rem 0.75rem 0.65rem 2.4rem;
+      border:1px solid rgba(15,23,42,0.08); border-radius:9999px; background:#fff; font-size:0.9rem; outline:none;
     }
-    .search-input:focus {
-      border: 1px solid rgba(0,60,113,0.45);
-      box-shadow: 0 10px 30px rgba(0,60,113,0.12);
-      background: #fff;
-    }
-    .search-icon {
-      position: absolute;
-      left: 0.8rem;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
+    .search-input:focus { border:1px solid rgba(0,60,113,0.45); box-shadow:0 10px 30px rgba(0,60,113,0.12); }
+    .search-icon { position:absolute; left:0.8rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:0.9rem; color:#94a3b8; }
     .dropdown {
-      position: absolute;
-      top: 2.8rem;
-      left: 0;
-      right: 0;
-      background: #fff;
-      border: 1px solid rgba(15,23,42,0.06);
-      border-radius: 1.25rem;
-      box-shadow: 0 18px 45px rgba(15,23,42,0.08);
-      max-height: 360px;
-      overflow-y: auto;
-      z-index: 40;
-      display: none;
+      position:absolute; top:2.8rem; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:1.25rem;
+      box-shadow:0 18px 45px rgba(15,23,42,0.08); max-height:360px; overflow-y:auto; z-index:40; display:none;
     }
-    .dropdown-item {
-      padding: 0.6rem 0.85rem 0.55rem 0.85rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-      cursor: pointer;
-      transition: background 0.12s ease;
-    }
-    .dropdown-item:hover {
-      background: rgba(0,60,113,0.04);
-    }
-    .dropdown-title { font-weight: 600; }
-    .dropdown-sub {
-      font-size: 0.7rem;
-      color: #94a3b8;
-    }
+    .dropdown-item { padding:0.6rem 0.85rem; display:flex; flex-direction:column; gap:0.15rem; cursor:pointer; }
+    .dropdown-item:hover { background:rgba(0,60,113,0.04); }
+    .dropdown-title { font-weight:600; }
+    .dropdown-sub { font-size:0.7rem; color:#94a3b8; }
 
-    main {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem;
-    }
-    @media (max-width: 980px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-      .search-wrapper {
-        max-width: 100%;
-      }
-    }
+    main { display:grid; grid-template-columns:340px 1fr; gap:1.5rem; padding:1.5rem; }
+    @media (max-width:980px) { main { grid-template-columns:1fr; } .search-wrapper{max-width:100%;} }
 
     .panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: 0 10px 40px rgba(15,23,42,0.04);
-      border: 1px solid rgba(15,23,42,0.03);
-      padding: 1rem;
+      background:var(--card); border-radius:var(--radius); box-shadow:0 10px 40px rgba(15,23,42,0.04);
+      border:1px solid rgba(15,23,42,0.03); padding:1rem;
     }
-    .client-header {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem;
+    .section-title { font-weight:600; font-size:0.78rem; margin-bottom:0.5rem; text-transform:uppercase; color:#475569; }
+    .muted { color:var(--muted); font-size:0.85rem; }
+
+    .client-header { display:flex; gap:1rem; align-items:center; margin-bottom:1rem; }
+    .avatar { width:58px; height:58px; border-radius:1.15rem; background:rgba(0,60,113,0.12); display:grid; place-items:center; font-weight:700; color:#fff; font-size:1.35rem; }
+    .badge-projet { background:rgba(0,60,113,0.08); color:#0f172a; font-size:0.6rem; padding:0.25rem 0.5rem; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; }
+
+    .info-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.45rem 1rem; }
+    @media (max-width:580px){ .info-grid { grid-template-columns:1fr; } }
+    .info-row { display:flex; flex-direction:column; gap:0.1rem; }
+    .label { font-size:0.65rem; color:#94a3b8; text-transform:uppercase; }
+    .value { font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:.5rem; }
+    .thumb { width:90px; height:64px; object-fit:cover; border-radius:0.6rem; border:1px solid var(--border); background:#fafafa; }
+
+    .agent-card { background:rgba(0,60,113,0.04); border-radius:1rem; padding:0.6rem 0.7rem 0.7rem; }
+    .optin-list { display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .optin-pill { padding:0.25rem 0.55rem 0.3rem; border-radius:999px; font-size:0.65rem; display:flex; gap:0.3rem; align-items:center; }
+    .yes { background:rgba(34,197,94,0.12); color:#166534; } .no { background:rgba(248,113,113,0.08); color:#b91c1c; }
+
+    .actions { display:flex; gap:0.5rem; margin-top:1rem; flex-wrap:wrap; }
+    .btn { background:var(--primary); border:none; color:#fff; padding:0.45rem 0.7rem 0.5rem; border-radius:0.85rem; font-size:0.7rem; display:inline-flex; align-items:center; gap:0.3rem; cursor:pointer; }
+    .btn.secondary { background:rgba(0,60,113,0.06); color:#0f172a; }
+
+    .empty-state { text-align:center; padding:2.5rem 1rem; color:#94a3b8; }
+
+    /* Modales */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.35); display:none; align-items:center; justify-content:center; z-index:50; }
+    .modal { background:#fff; width:min(560px,92vw); border-radius:1rem; padding:1rem; box-shadow:0 25px 60px rgba(0,0,0,0.25); }
+    .modal header { position:unset; border:none; padding:0 0 .5rem 0; justify-content:space-between; }
+    .modal h3 { margin:0; font-size:1.05rem; }
+    .modal .form { display:flex; flex-direction:column; gap:.6rem; margin-top:.6rem; }
+    .modal label { font-size:.8rem; color:#475569; }
+    .modal input, .modal textarea, .modal select {
+      width:100%; padding:.6rem .7rem; border:1px solid var(--border); border-radius:.7rem; font-size:.9rem; outline:none;
     }
-    .avatar {
-      width: 58px;
-      height: 58px;
-      border-radius: 1.15rem;
-      background: rgba(0,60,113,0.12);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      color: #fff;
-      font-size: 1.35rem;
-    }
-    .badge-projet {
-      background: rgba(0,60,113,0.08);
-      color: #0f172a;
-      font-size: 0.6rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-    h2 {
-      margin: 0;
-      font-size: 1.1rem;
-    }
-    .muted { color: var(--muted); font-size: 0.8rem; }
-    .section-title {
-      font-weight: 600;
-      font-size: 0.78rem;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      color: #475569;
-      letter-spacing: 0.03em;
-    }
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2,minmax(0,1fr));
-      gap: 0.45rem 1rem;
-    }
-    @media (max-width: 580px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .info-row {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-    .label { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; }
-    .value { font-size: 0.9rem; font-weight: 500; }
-    .agent-card {
-      background: rgba(0,60,113,0.04);
-      border-radius: 1rem;
-      padding: 0.6rem 0.7rem 0.7rem;
-    }
-    .optin-list {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .optin-pill {
-      padding: 0.25rem 0.55rem 0.3rem;
-      border-radius: 999px;
-      font-size: 0.65rem;
-      display: flex;
-      gap: 0.3rem;
-      align-items: center;
-    }
-    .yes { background: rgba(34,197,94,0.12); color: #166534; }
-    .no { background: rgba(248,113,113,0.08); color: #b91c1c; }
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-    .btn {
-      background: var(--primary);
-      border: none;
-      color: #fff;
-      padding: 0.45rem 0.7rem 0.5rem;
-      border-radius: 0.85rem;
-      font-size: 0.7rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      cursor: pointer;
-    }
-    .btn.secondary {
-      background: rgba(0,60,113,0.06);
-      color: #0f172a;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 2.5rem 1rem;
-      color: #94a3b8;
-    }
+    .modal .row { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; }
+    @media (max-width:560px){ .modal .row { grid-template-columns:1fr; } }
+    .modal .footer { display:flex; gap:.5rem; justify-content:flex-end; margin-top:.8rem; }
+    .btn.ghost { background:transparent; color:#0f172a; border:1px solid var(--border); }
+    .history-list { margin-top:.75rem; display:flex; flex-direction:column; gap:.5rem; }
+    .history-item { padding:.55rem .6rem; border:1px solid var(--border); border-radius:.7rem; background:#fff; }
+    .history-item small { color:#64748b; }
   </style>
 </head>
 <body>
   <header>
-    <div class="app-title">Clienteling PICHET · RCU</div>
+    <div class="logo-wrap">
+      <img src="https://www.pichet.fr/assets/build/images/logo-pichet.svg" alt="Pichet" />
+      <div class="app-title">Clienteling RCU · Démo</div>
+    </div>
     <div class="search-wrapper">
       <span class="search-icon">🔎</span>
       <input id="searchInput" class="search-input" placeholder="Rechercher (nom, prénom, email)..." autocomplete="off" />
@@ -235,25 +104,26 @@
   </header>
 
   <main>
-    <!-- Colonne de gauche : infos rapides -->
+    <!-- Colonne de gauche -->
     <aside class="panel" id="leftPanel">
-      <div class="section-title">Dernier contact</div>
-      <p class="muted" style="margin-top:0;">Sélectionnez un contact à gauche pour afficher le détail.</p>
-      <div class="section-title" style="margin-top:1.5rem;">Raccourcis</div>
+      <div class="section-title">Historique</div>
+      <p class="muted" style="margin-top:0;">Crée une opportunité ou ajoute une note une fois un contact sélectionné.</p>
+      <div id="history" class="history-list"></div>
+      <div class="section-title" style="margin-top:1.2rem;">Raccourcis</div>
       <div class="actions">
-        <button class="btn secondary" onclick="alert('TODO: créer une opportunité dans Pichet')">+ Nouvelle opportunité</button>
-        <button class="btn secondary" onclick="alert('TODO: ajouter une note')">+ Ajouter une note</button>
+        <button class="btn secondary" id="btnNewOpp" disabled>+ Nouvelle opportunité</button>
+        <button class="btn secondary" id="btnNewNote" disabled>+ Ajouter une note</button>
       </div>
     </aside>
 
     <!-- Colonne de droite : fiche client -->
     <section class="panel" id="clientPanel">
       <div id="emptyState" class="empty-state">
-        🔎 Recherchez “michel” : la fiche de <strong>Michel Martin</strong> s’affichera ici.
+        🔎 La page est vierge au chargement. Recherchez un contact (ex. “michel”) pour afficher sa fiche.
       </div>
       <div id="clientContent" style="display:none;">
         <div class="client-header">
-          <div class="avatar" id="avatarInitials">MM</div>
+          <div class="avatar" id="avatarInitials">CL</div>
           <div>
             <h2 id="clientName">—</h2>
             <div class="muted" id="clientEmail">—</div>
@@ -270,7 +140,7 @@
             </div>
             <div class="info-row">
               <span class="label">Canal préféré</span>
-              <span class="value" id="canalPref">—</span>
+              <span class="value"><span id="canalPrefIcon"></span><span id="canalPref">—</span></span>
             </div>
             <div class="info-row" style="grid-column:1/-1;">
               <span class="label">Adresse</span>
@@ -292,7 +162,10 @@
             </div>
             <div class="info-row">
               <span class="label">Dernier achat</span>
-              <span class="value" id="dernierAchat">—</span>
+              <span class="value">
+                <img id="dernierAchatImg" class="thumb" alt="Dernier achat" style="display:none;" />
+                <span id="dernierAchat">—</span>
+              </span>
             </div>
           </div>
         </div>
@@ -312,46 +185,129 @@
         </div>
 
         <div class="actions">
-          <button class="btn" onclick="alert('TODO: envoyer un email depuis Imagino / hub interne')">📧 Contacter</button>
-          <button class="btn secondary" onclick="alert('TODO: créer suivi visite')">📝 Planifier une visite</button>
+          <button class="btn" id="btnContact" disabled>📧 Contacter</button>
+          <button class="btn secondary" id="btnPlanifier" disabled>📝 Planifier une visite</button>
         </div>
       </div>
     </section>
   </main>
 
+  <!-- Modal Opportunité -->
+  <div id="modalOpp" class="modal-backdrop">
+    <div class="modal">
+      <header>
+        <h3>Nouvelle opportunité</h3>
+        <button class="btn ghost" onclick="closeOpp()">Fermer</button>
+      </header>
+      <div class="form">
+        <div class="row">
+          <div>
+            <label>Titre</label>
+            <input id="oppTitle" placeholder="Ex : Achat T2 Bordeaux Bastide" />
+          </div>
+          <div>
+            <label>Statut</label>
+            <select id="oppStatus">
+              <option value="Ouverte">Ouverte</option>
+              <option value="En cours">En cours</option>
+              <option value="Gagnée">Gagnée</option>
+              <option value="Perdue">Perdue</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Budget (EUR)</label>
+            <input id="oppBudget" type="number" min="0" step="1000" placeholder="250000" />
+          </div>
+          <div>
+            <label>Échéance</label>
+            <input id="oppDue" type="date" />
+          </div>
+        </div>
+        <div>
+          <label>Notes</label>
+          <textarea id="oppNotes" rows="4" placeholder="Contexte, besoins, timing..."></textarea>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn ghost" onclick="closeOpp()">Annuler</button>
+        <button class="btn" onclick="saveOpp()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Note -->
+  <div id="modalNote" class="modal-backdrop">
+    <div class="modal">
+      <header>
+        <h3>Ajouter une note</h3>
+        <button class="btn ghost" onclick="closeNote()">Fermer</button>
+      </header>
+      <div class="form">
+        <div class="row">
+          <div>
+            <label>Titre</label>
+            <input id="noteTitle" placeholder="Ex : Relancer pour visite témoin" />
+          </div>
+          <div>
+            <label>Type</label>
+            <select id="noteType">
+              <option value="Note">Note</option>
+              <option value="Appel">Appel</option>
+              <option value="Email">Email</option>
+              <option value="Visite">Visite</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Contenu</label>
+          <textarea id="noteBody" rows="4" placeholder="Détail de la note..."></textarea>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn ghost" onclick="closeNote()">Annuler</button>
+        <button class="btn" onclick="saveNote()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_BASE_URL = "https://francois-sandbox.saas.imagino.com/ucdapi/API_RCU_Pichet/1/RCU_immo_Contacts";
     const API_KEY = "0cfe1225-a2f7-43b9-9645-caebdaf5a971";
     let ALL_CONTACTS = [];
+    let CURRENT_CONTACT = null;
 
     const searchInput = document.getElementById("searchInput");
     const dropdown = document.getElementById("searchDropdown");
+    const historyEl = document.getElementById("history");
+
+    // --- Icons (inline SVG) ---
+    function iconEmail(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v12H4z" stroke="#003c71" stroke-width="1.7"/><path d="M4 7l8 6 8-6" stroke="#003c71" stroke-width="1.7"/></svg>'}
+    function iconPhone(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.58 2.64a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.44-1.14a2 2 0 0 1 2.11-.45c.86.26 1.74.46 2.64.58A2 2 0 0 1 22 16.92z" stroke="#003c71" stroke-width="1.7"/></svg>'}
+    function iconSMS(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H8l-5 5V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#003c71" stroke-width="1.7"/></svg>'}
+    function iconWhats(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 11.5A8.5 8.5 0 1 1 6.6 19.9L3 21l1.1-3.6A8.5 8.5 0 0 1 20 11.5z" stroke="#003c71" stroke-width="1.7"/></svg>'}
+    function iconVisit(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l7 7-7 7-7-7 7-7z" stroke="#003c71" stroke-width="1.7"/><path d="M12 22v-6" stroke="#003c71" stroke-width="1.7"/></svg>'}
+    function iconBuilding(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#003c71" stroke-width="1.7"/><path d="M8 7h2M8 11h2M8 15h2M14 7h2M14 11h2M14 15h2" stroke="#003c71" stroke-width="1.7"/></svg>'}
+
+    function canalIcon(val){
+      const v = (val||"").toString().toLowerCase();
+      if (v.includes("mail")) return iconEmail();
+      if (v.includes("télé") || v.includes("telephone") || v.includes("phone")) return iconPhone();
+      if (v.includes("sms")) return iconSMS();
+      if (v.includes("whats")) return iconWhats();
+      if (v.includes("visite") || v.includes("rdv") || v.includes("agence")) return iconVisit();
+      return iconEmail();
+    }
 
     async function loadContacts() {
       try {
-        const url = API_BASE_URL + "?limit=1000";
-        const res = await fetch(url, {
-          headers: {
-            "X-API-KEY": API_KEY
-          }
-        });
-        if (!res.ok) {
-          console.error("Erreur API", res.status);
-          return;
-        }
+        const res = await fetch(API_BASE_URL + "?limit=1000", { headers: { "X-API-KEY": API_KEY } });
+        if (!res.ok) return;
         const json = await res.json();
         ALL_CONTACTS = json.data || [];
-        // auto-sélection de Michel Martin si présent
-        const michel = ALL_CONTACTS.find(c =>
-          (c.firstName && c.firstName.toLowerCase() === "michel") &&
-          (c.lastName && c.lastName.toLowerCase().includes("martin"))
-        );
-        if (michel) {
-          renderClient(michel);
-        }
-      } catch (e) {
-        console.error("Erreur chargement contacts", e);
-      }
+        // Page reste vierge : pas d'auto-sélection
+      } catch (e) { console.error(e); }
     }
 
     function filterContacts(term) {
@@ -365,64 +321,110 @@
     }
 
     function renderDropdown(items) {
-      if (!items.length) {
-        dropdown.style.display = "none";
-        return;
-      }
+      if (!items.length) { dropdown.style.display = "none"; return; }
       dropdown.innerHTML = "";
       items.forEach(c => {
-        const div = document.createElement("div");
-        div.className = "dropdown-item";
-        const fullName = (c.firstName || "") + " " + (c.lastName || "");
-        div.innerHTML = `
-          <span class="dropdown-title">${fullName.trim() || "(sans nom)"}</span>
+        const el = document.createElement("div");
+        el.className = "dropdown-item";
+        const fullName = ((c.firstName || "") + " " + (c.lastName || "")).trim() || "(sans nom)";
+        el.innerHTML = `
+          <span class="dropdown-title">${fullName}</span>
           <span class="dropdown-sub">${c.email || "—"}${c.city ? " · " + c.city : ""}</span>
         `;
-        div.addEventListener("click", () => {
+        el.addEventListener("click", () => {
           renderClient(c);
           dropdown.style.display = "none";
-          searchInput.value = fullName.trim();
+          searchInput.value = fullName;
         });
-        dropdown.appendChild(div);
+        dropdown.appendChild(el);
       });
       dropdown.style.display = "block";
     }
 
+    function contactKey(c){
+      return c.email || (c.id || c.CLIENT_ID) || ((c.firstName||"")+":"+(c.lastName||""));
+    }
+
+    function getStore(type){
+      try { return JSON.parse(localStorage.getItem(type) || "{}"); } catch { return {}; }
+    }
+    function setStore(type, obj){
+      localStorage.setItem(type, JSON.stringify(obj));
+    }
+
+    function renderHistory() {
+      historyEl.innerHTML = "";
+      if (!CURRENT_CONTACT) return;
+      const key = contactKey(CURRENT_CONTACT);
+      const opps = getStore("pichet_opps")[key] || [];
+      const notes = getStore("pichet_notes")[key] || [];
+      const items = [
+        ...opps.map(o => ({type:"Opp", date:o.date, title:o.title, extra:o.status+" · "+(o.budget? (o.budget+"€"):"")})),
+        ...notes.map(n => ({type:n.type||"Note", date:n.date, title:n.title, extra:(n.body||"").slice(0,120)}))
+      ].sort((a,b)=> new Date(b.date)-new Date(a.date));
+      if (!items.length) {
+        const p = document.createElement("p");
+        p.className = "muted"; p.textContent = "Aucun élément pour ce contact.";
+        historyEl.appendChild(p); return;
+      }
+      items.forEach(it => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `<strong>${it.type}</strong> — ${it.title || "(sans titre)"}<br/><small>${new Date(it.date).toLocaleString()} · ${it.extra||""}</small>`;
+        historyEl.appendChild(div);
+      });
+    }
+
+    function enableActions(enabled){
+      document.getElementById("btnNewOpp").disabled = !enabled;
+      document.getElementById("btnNewNote").disabled = !enabled;
+      document.getElementById("btnContact").disabled = !enabled;
+      document.getElementById("btnPlanifier").disabled = !enabled;
+    }
+
     function renderClient(c) {
+      CURRENT_CONTACT = c;
       document.getElementById("emptyState").style.display = "none";
       document.getElementById("clientContent").style.display = "block";
+      enableActions(true);
 
       const name = ((c.firstName || "") + " " + (c.lastName || "")).trim() || "(Sans nom)";
       document.getElementById("clientName").textContent = name;
       document.getElementById("clientEmail").textContent = c.email || "—";
       document.getElementById("clientTel").textContent = c.telephone || "—";
-      document.getElementById("canalPref").textContent = c.Canal_prefere || "—";
+
+      const canal = c.Canal_prefere || c.canalPrefere || c.canal_prefere || "";
+      document.getElementById("canalPref").textContent = canal || "—";
+      document.getElementById("canalPrefIcon").innerHTML = canalIcon(canal);
 
       const addrParts = [c.addressLine, c.zipCode, c.city, c.country].filter(Boolean);
       document.getElementById("clientAddress").textContent = addrParts.join(", ") || "—";
 
-      document.getElementById("projetActuel").textContent = c.Projet_actuel || "—";
-      document.getElementById("villesInterets").textContent = c.Ville_d_interets || "—";
-      document.getElementById("dernierAchat").textContent = c.Dernier_achat || "—";
+      document.getElementById("projetActuel").textContent = c.Projet_actuel || c.projetActuel || "—";
+      document.getElementById("villesInterets").textContent = c.Ville_d_interets || c.villesInterets || "—";
 
-      document.getElementById("nomAgent").textContent = c.Nom_Agent || "—";
-      document.getElementById("telAgent").textContent = c.Tel_agent ? "📞 " + c.Tel_agent : "—";
-      document.getElementById("agenceLiee").textContent = c.Agence_liee ? "Agence : " + c.Agence_liee : "";
-
-      // badge projet
-      const badge = document.getElementById("badgeProjet");
-      if (c.Projet_actuel) {
-        badge.textContent = c.Projet_actuel;
-        badge.style.display = "inline-block";
+      // Dernier achat : image si disponible
+      const img = c.Dernier_achat_image || c.Photo_bien || c.photoBien;
+      const lastTxt = c.Dernier_achat || c.dernierAchat || "";
+      const imgEl = document.getElementById("dernierAchatImg");
+      const txtEl = document.getElementById("dernierAchat");
+      if (img && typeof img === "string" && (img.startsWith("http://") || img.startsWith("https://"))) {
+        imgEl.src = img; imgEl.style.display = "inline-block"; txtEl.textContent = lastTxt || "";
       } else {
-        badge.style.display = "none";
+        imgEl.style.display = "inline-block"; imgEl.src = "data:image/svg+xml;utf8," + encodeURIComponent(iconBuilding());
+        txtEl.textContent = lastTxt || "—";
       }
 
-      // avatar
+      document.getElementById("nomAgent").textContent = c.Nom_Agent || c.nomAgent || "—";
+      document.getElementById("telAgent").textContent = c.Tel_agent ? "📞 " + c.Tel_agent : (c.telAgent ? "📞 " + c.telAgent : "—");
+      document.getElementById("agenceLiee").textContent = c.Agence_liee ? "Agence : " + c.Agence_liee : (c.agenceLiee ? "Agence : " + c.agenceLiee : "");
+
+      const badge = document.getElementById("badgeProjet");
+      if (c.Projet_actuel || c.projetActuel) { badge.textContent = c.Projet_actuel || c.projetActuel; badge.style.display = "inline-block"; } else { badge.style.display = "none"; }
+
       const initials = (c.firstName ? c.firstName[0] : "") + (c.lastName ? c.lastName[0] : "");
       document.getElementById("avatarInitials").textContent = initials ? initials.toUpperCase() : "CL";
 
-      // optins
       const optinsEl = document.getElementById("optins");
       optinsEl.innerHTML = "";
       const optins = [
@@ -434,29 +436,74 @@
       ];
       optins.forEach(o => {
         if (o.val === undefined) return;
-        const span = document.createElement("span");
-        span.className = "optin-pill " + (o.val ? "yes" : "no");
-        span.textContent = o.label + ": " + (o.val ? "Oui" : "Non");
-        optinsEl.appendChild(span);
+        const pill = document.createElement("span");
+        pill.className = "optin-pill " + (o.val ? "yes" : "no");
+        pill.textContent = o.label + ": " + (o.val ? "Oui" : "Non");
+        optinsEl.appendChild(pill);
       });
+
+      renderHistory();
     }
 
-    searchInput.addEventListener("input", (e) => {
+    // Dropdown search
+    searchInput.addEventListener("input", e => {
       const term = e.target.value.trim();
-      if (!term) {
-        dropdown.style.display = "none";
-        return;
-      }
+      if (!term) { dropdown.style.display = "none"; return; }
       const results = filterContacts(term);
       renderDropdown(results);
     });
-
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-wrapper")) {
-        dropdown.style.display = "none";
-      }
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".search-wrapper")) dropdown.style.display = "none";
     });
 
+    // Actions / Modales
+    const modalOpp = document.getElementById("modalOpp");
+    const modalNote = document.getElementById("modalNote");
+    document.getElementById("btnNewOpp").addEventListener("click", ()=> openOpp());
+    document.getElementById("btnNewNote").addEventListener("click", ()=> openNote());
+
+    function openOpp(){ if(!CURRENT_CONTACT) return; modalOpp.style.display="flex"; }
+    function closeOpp(){ modalOpp.style.display="none"; }
+    function openNote(){ if(!CURRENT_CONTACT) return; modalNote.style.display="flex"; }
+    function closeNote(){ modalNote.style.display="none"; }
+
+    function saveOpp(){
+      if(!CURRENT_CONTACT) return;
+      const key = contactKey(CURRENT_CONTACT);
+      const store = getStore("pichet_opps");
+      store[key] = store[key] || [];
+      const item = {
+        title: document.getElementById("oppTitle").value || "(Sans titre)",
+        status: document.getElementById("oppStatus").value || "Ouverte",
+        budget: document.getElementById("oppBudget").value || "",
+        due: document.getElementById("oppDue").value || "",
+        notes: document.getElementById("oppNotes").value || "",
+        date: new Date().toISOString()
+      };
+      store[key].push(item); setStore("pichet_opps", store);
+      closeOpp(); renderHistory(); alert("Opportunité enregistrée (local).");
+    }
+
+    function saveNote(){
+      if(!CURRENT_CONTACT) return;
+      const key = contactKey(CURRENT_CONTACT);
+      const store = getStore("pichet_notes");
+      store[key] = store[key] || [];
+      const item = {
+        title: document.getElementById("noteTitle").value || "(Sans titre)",
+        type: document.getElementById("noteType").value || "Note",
+        body: document.getElementById("noteBody").value || "",
+        date: new Date().toISOString()
+      };
+      store[key].push(item); setStore("pichet_notes", store);
+      closeNote(); renderHistory(); alert("Note enregistrée (local).");
+    }
+
+    // Boutons de la fiche (démo)
+    document.getElementById("btnContact").addEventListener("click", ()=> alert("TODO: déclencher un envoi / ouvrir hub interne"));
+    document.getElementById("btnPlanifier").addEventListener("click", ()=> alert("TODO: créer un suivi de visite"));
+
+    // Init
     loadContacts();
   </script>
 </body>
