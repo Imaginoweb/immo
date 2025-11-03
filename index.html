@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Clienteling PICHET</title>
+  <title>Clienteling PICHET · RCU</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -68,13 +68,14 @@
     .actions { display:flex; gap:0.5rem; margin-top:1rem; flex-wrap:wrap; }
     .btn { background:var(--primary); border:none; color:#fff; padding:0.45rem 0.7rem 0.5rem; border-radius:0.85rem; font-size:0.7rem; display:inline-flex; align-items:center; gap:0.3rem; cursor:pointer; }
     .btn.secondary { background:rgba(0,60,113,0.06); color:#0f172a; }
+    .btn.ghost { background:transparent; color:#0f172a; border:1px solid var(--border); }
 
     .empty-state { text-align:center; padding:2.5rem 1rem; color:#94a3b8; }
 
     /* Modales */
     .modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.35); display:none; align-items:center; justify-content:center; z-index:50; }
     .modal { background:#fff; width:min(560px,92vw); border-radius:1rem; padding:1rem; box-shadow:0 25px 60px rgba(0,0,0,0.25); }
-    .modal header { position:unset; border:none; padding:0 0 .5rem 0; justify-content:space-between; }
+    .modal header { position:unset; border:none; padding:0 0 .5rem 0; justify-content:space-between; display:flex; align-items:center; }
     .modal h3 { margin:0; font-size:1.05rem; }
     .modal .form { display:flex; flex-direction:column; gap:.6rem; margin-top:.6rem; }
     .modal label { font-size:.8rem; color:#475569; }
@@ -84,10 +85,20 @@
     .modal .row { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; }
     @media (max-width:560px){ .modal .row { grid-template-columns:1fr; } }
     .modal .footer { display:flex; gap:.5rem; justify-content:flex-end; margin-top:.8rem; }
-    .btn.ghost { background:transparent; color:#0f172a; border:1px solid var(--border); }
-    .history-list { margin-top:.75rem; display:flex; flex-direction:column; gap:.5rem; }
-    .history-item { padding:.55rem .6rem; border:1px solid var(--border); border-radius:.7rem; background:#fff; }
-    .history-item small { color:#64748b; }
+
+    /* Programmes */
+    .programs { margin-top:1rem; }
+    .programs-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    @media (max-width:980px){ .programs-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:560px){ .programs-grid{ grid-template-columns:1fr; } }
+    .program-card{ border:1px solid var(--border); border-radius:.9rem; overflow:hidden; background:#fff; display:flex; flex-direction:column; }
+    .program-card img{ width:100%; height:132px; object-fit:cover; }
+    .program-body{ padding:.6rem .7rem; display:flex; flex-direction:column; gap:.25rem; }
+    .program-title{ font-weight:600; font-size:.95rem; line-height:1.2; }
+    .program-meta{ color:#64748b; font-size:.8rem; }
+    .program-price{ font-weight:700; font-size:.92rem; margin-top:.15rem; }
+    .program-actions{ display:flex; gap:.4rem; padding:.6rem .7rem .7rem; }
+    .program-actions .btn{ font-size:.7rem; padding:.4rem .6rem; border-radius:.6rem; }
   </style>
 </head>
 <body>
@@ -184,6 +195,12 @@
           <div class="optin-list" id="optins"></div>
         </div>
 
+        <!-- Programmes recommandés -->
+        <div class="programs">
+          <div class="section-title">Programmes recommandés</div>
+          <div id="programsGrid" class="programs-grid"></div>
+        </div>
+
         <div class="actions">
           <button class="btn" id="btnContact" disabled>📧 Contacter</button>
           <button class="btn secondary" id="btnPlanifier" disabled>📝 Planifier une visite</button>
@@ -273,16 +290,20 @@
   </div>
 
   <script>
+    // === CONFIG API ===
     const API_BASE_URL = "https://francois-sandbox.saas.imagino.com/ucdapi/API_RCU_Pichet/1/RCU_immo_Contacts";
     const API_KEY = "0cfe1225-a2f7-43b9-9645-caebdaf5a971";
+
+    // === ÉTAT GLOBAL ===
     let ALL_CONTACTS = [];
     let CURRENT_CONTACT = null;
 
+    // === UI HOOKS ===
     const searchInput = document.getElementById("searchInput");
     const dropdown = document.getElementById("searchDropdown");
     const historyEl = document.getElementById("history");
 
-    // --- Icons (inline SVG) ---
+    // --- Icônes inline ---
     function iconEmail(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v12H4z" stroke="#003c71" stroke-width="1.7"/><path d="M4 7l8 6 8-6" stroke="#003c71" stroke-width="1.7"/></svg>'}
     function iconPhone(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.58 2.64a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.44-1.14a2 2 0 0 1 2.11-.45c.86.26 1.74.46 2.64.58A2 2 0 0 1 22 16.92z" stroke="#003c71" stroke-width="1.7"/></svg>'}
     function iconSMS(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H8l-5 5V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#003c71" stroke-width="1.7"/></svg>'}
@@ -300,16 +321,17 @@
       return iconEmail();
     }
 
+    // === CHARGEMENT CONTACTS (page vierge : pas d'auto-sélection) ===
     async function loadContacts() {
       try {
         const res = await fetch(API_BASE_URL + "?limit=1000", { headers: { "X-API-KEY": API_KEY } });
         if (!res.ok) return;
         const json = await res.json();
         ALL_CONTACTS = json.data || [];
-        // Page reste vierge : pas d'auto-sélection
       } catch (e) { console.error(e); }
     }
 
+    // === RECHERCHE / DROPDOWN ===
     function filterContacts(term) {
       const t = term.toLowerCase();
       return ALL_CONTACTS.filter(c => {
@@ -341,16 +363,19 @@
       dropdown.style.display = "block";
     }
 
-    function contactKey(c){
-      return c.email || (c.id || c.CLIENT_ID) || ((c.firstName||"")+":"+(c.lastName||""));
-    }
+    searchInput.addEventListener("input", e => {
+      const term = e.target.value.trim();
+      if (!term) { dropdown.style.display = "none"; return; }
+      renderDropdown(filterContacts(term));
+    });
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".search-wrapper")) dropdown.style.display = "none";
+    });
 
-    function getStore(type){
-      try { return JSON.parse(localStorage.getItem(type) || "{}"); } catch { return {}; }
-    }
-    function setStore(type, obj){
-      localStorage.setItem(type, JSON.stringify(obj));
-    }
+    // === PERSISTENCE (localStorage) ===
+    function contactKey(c){ return c.email || (c.id || c.CLIENT_ID) || ((c.firstName||"")+":"+(c.lastName||"")); }
+    function getStore(type){ try { return JSON.parse(localStorage.getItem(type) || "{}"); } catch { return {}; } }
+    function setStore(type, obj){ localStorage.setItem(type, JSON.stringify(obj)); }
 
     function renderHistory() {
       historyEl.innerHTML = "";
@@ -363,18 +388,120 @@
         ...notes.map(n => ({type:n.type||"Note", date:n.date, title:n.title, extra:(n.body||"").slice(0,120)}))
       ].sort((a,b)=> new Date(b.date)-new Date(a.date));
       if (!items.length) {
-        const p = document.createElement("p");
-        p.className = "muted"; p.textContent = "Aucun élément pour ce contact.";
+        const p = document.createElement("p"); p.className = "muted"; p.textContent = "Aucun élément pour ce contact.";
         historyEl.appendChild(p); return;
       }
       items.forEach(it => {
         const div = document.createElement("div");
         div.className = "history-item";
-        div.innerHTML = `<strong>${it.type}</strong> — ${it.title || "(sans titre)"}<br/><small>${new Date(it.date).toLocaleString()} · ${it.extra||""}</small>`;
+        div.style.cssText = "padding:.55rem .6rem;border:1px solid var(--border);border-radius:.7rem;background:#fff;";
+        div.innerHTML = `<strong>${it.type}</strong> — ${it.title || "(sans titre)"}<br/><small style="color:#64748b">${new Date(it.date).toLocaleString()} · ${it.extra||""}</small>`;
         historyEl.appendChild(div);
       });
     }
 
+    function enableActions(enabled){
+      document.getElementById("btnNewOpp").disabled = !enabled;
+      document.getElementById("btnNewNote").disabled = !enabled;
+      document.getElementById("btnContact").disabled = !enabled;
+      document.getElementById("btnPlanifier").disabled = !enabled;
+    }
+
+    // === PROGRAMMES (extraits de la page Pichet fournie) ===
+    const PROGRAMS = [
+      {
+        name: "L'Île en Seine - Les Riots et La Ria",
+        city: "L'Île-Saint-Denis",
+        price: "252 000 €",
+        img: "https://pichet-assets-prd.twic.pics/uploads/2025/08/Vignette_site_pichet_PHOTO_L_ILE_SAINT_DENIS_L_ILE_EN_SEINE_VILLAGE_DES_ATHLETES_PB8_LOGEMENTS.jpg",
+        url: "https://www.pichet.fr/programme-neuf/programme-immobilier-neuf-ile-saint-denis-ile-en-seine-riots-ria",
+        tag: "Offre spéciale*"
+      },
+      {
+        name: "Villa Rodin",
+        city: "Issy-les-Moulineaux",
+        price: "235 000 €",
+        img: "https://pichet-assets-prd.twic.pics/uploads/2025/09/Vignettesitepichet_PERSPECTIVE_ISSY_LES_MOULINEAUX_VILLA_RODIN_2025_RUE.jpg",
+        url: "https://www.pichet.fr/programme-neuf/programme-immobilier-neuf-issy-les-moulineaux-villa-rodin",
+        tag: "Offre spéciale* · Nouveauté"
+      },
+      {
+        name: "L’Estacade",
+        city: "Compiègne",
+        price: "227 000 €",
+        img: "https://pichet-assets-prd.twic.pics/uploads/2025/04/Vignettesitepichet_APPARTEMENT_TEMOIN_A105_L_ESTACADE_COMPIEGNE_4_.jpg",
+        url: "https://www.pichet.fr/programme-neuf/programme-immobilier-neuf-compiegne-estacade",
+        tag: "Livraison fin 2025"
+      },
+      {
+        name: "Emergence",
+        city: "Bordeaux",
+        price: "202 000 €",
+        img: "https://pichet-assets-prd.twic.pics/uploads/2024/04/Vignette_Bordeaux_Emergence_2024.jpg",
+        url: "https://www.pichet.fr/programme-neuf/programme-immobilier-neuf-bordeaux-emergence",
+        tag: "Prestige · Travaux en cours"
+      },
+      {
+        name: "Altéa",
+        city: "La Teste-de-Buch",
+        price: "225 000 €",
+        img: "https://pichet-assets-prd.twic.pics/uploads/2025/04/Vignettesitepichet_PERSPECTIVE_LA_TESTE_DE_BUCH_ALTEA_2025_VUE_BATIMENT_B.jpg",
+        url: "https://www.pichet.fr/programme-neuf/programme-immobilier-neuf-la-teste-de-buch-altea",
+        tag: "Frais de notaire offerts*"
+      },
+      {
+        name: "Les Rives du Jonquet",
+        city: "Arles",
+        price: "133 000 €",
+        img: "https://pichet-assets-prd.twic.pics/uploads/2024/04/Vignette_Arles_Les_Rives_du_Jonquet_2024_G2P_2495.jpg",
+        url: "https://www.pichet.fr/programme-neuf/programme-immobilier-neuf-arles-les-rives-du-jonquet",
+        tag: "TVA réduite 5,5% · Offre spéciale*"
+      }
+    ];
+
+    function eurosToNumber(eur){
+      return parseInt((eur||"").replace(/[^\d]/g,"") || "0", 10);
+    }
+
+    function renderPrograms(forContact){
+      const wrap = document.getElementById("programsGrid");
+      wrap.innerHTML = "";
+
+      // Optionnel : filtrer par ville d'intérêt si présente dans le contact
+      const interest = (forContact?.Ville_d_interets || forContact?.villesInterets || "").toString().toLowerCase();
+      let data = PROGRAMS.slice();
+      if (interest) {
+        const filtered = PROGRAMS.filter(p => p.city.toLowerCase().includes(interest));
+        if (filtered.length) data = filtered.concat(PROGRAMS.filter(p => !p.city.toLowerCase().includes(interest))).slice(0,6);
+      }
+
+      data.forEach(p=>{
+        const card = document.createElement("div");
+        card.className = "program-card";
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <div class="program-body">
+            <div class="program-title">${p.name}</div>
+            <div class="program-meta">${p.city}${p.tag ? " · " + p.tag : ""}</div>
+            <div class="program-price">${p.price ? ("À partir de " + p.price) : ""}</div>
+          </div>
+          <div class="program-actions">
+            <a class="btn secondary" href="${p.url}" target="_blank" rel="noopener">🔗 Voir</a>
+            <button class="btn" data-name="${p.name}" data-price="${p.price}">➕ Ajouter en opportunité</button>
+          </div>
+        `;
+        card.querySelector("button.btn").addEventListener("click",()=>{
+          if(!CURRENT_CONTACT) return;
+          openOpp();
+          document.getElementById("oppTitle").value = `${p.name} — ${CURRENT_CONTACT.firstName||""} ${CURRENT_CONTACT.lastName||""}`.trim();
+          document.getElementById("oppBudget").value = eurosToNumber(p.price);
+          document.getElementById("oppNotes").value = `Programme: ${p.name}\nVille: ${p.city}\nLien: ${p.url}`;
+        });
+        wrap.appendChild(card);
+      });
+    }
+
+    // === RENDU FICHE ===
     function enableActions(enabled){
       document.getElementById("btnNewOpp").disabled = !enabled;
       document.getElementById("btnNewNote").disabled = !enabled;
@@ -442,25 +569,17 @@
         optinsEl.appendChild(pill);
       });
 
+      renderPrograms(c);
       renderHistory();
     }
 
-    // Dropdown search
-    searchInput.addEventListener("input", e => {
-      const term = e.target.value.trim();
-      if (!term) { dropdown.style.display = "none"; return; }
-      const results = filterContacts(term);
-      renderDropdown(results);
-    });
-    document.addEventListener("click", e => {
-      if (!e.target.closest(".search-wrapper")) dropdown.style.display = "none";
-    });
-
-    // Actions / Modales
+    // === MODALES / ACTIONS ===
     const modalOpp = document.getElementById("modalOpp");
     const modalNote = document.getElementById("modalNote");
     document.getElementById("btnNewOpp").addEventListener("click", ()=> openOpp());
     document.getElementById("btnNewNote").addEventListener("click", ()=> openNote());
+    document.getElementById("btnContact").addEventListener("click", ()=> alert("TODO: déclencher un envoi / ouvrir hub interne"));
+    document.getElementById("btnPlanifier").addEventListener("click", ()=> alert("TODO: créer un suivi de visite"));
 
     function openOpp(){ if(!CURRENT_CONTACT) return; modalOpp.style.display="flex"; }
     function closeOpp(){ modalOpp.style.display="none"; }
@@ -499,11 +618,7 @@
       closeNote(); renderHistory(); alert("Note enregistrée (local).");
     }
 
-    // Boutons de la fiche (démo)
-    document.getElementById("btnContact").addEventListener("click", ()=> alert("TODO: déclencher un envoi / ouvrir hub interne"));
-    document.getElementById("btnPlanifier").addEventListener("click", ()=> alert("TODO: créer un suivi de visite"));
-
-    // Init
+    // === INIT ===
     loadContacts();
   </script>
 </body>
